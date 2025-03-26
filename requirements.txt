@@ -1,0 +1,18 @@
+# Core
+flask
+flask-cors
+flasgger
+
+# Data + ML
+numpy
+scikit-learn
+
+# Pipeline (Snakemake only - Nextflow is CLI-based)
+snakemake
+
+# Testing
+requests
+
+# Optional: NWB reading if needed later
+# h5py
+# pynwb
