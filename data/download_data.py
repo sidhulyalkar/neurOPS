@@ -1,7 +1,7 @@
 import urllib.request
 import os
 
-URL = "https://github.com/NeurodataWithoutBorders/pynwb/raw/main/src/pynwb/testing/data/test_data.nwb"
+URL = "https://github.com/NeurodataWithoutBorders/pynwb/blob/dev/tests/back_compat/2.1.0_imageseries_nonmatch_starting_frame.nwb"
 DEST_DIR = 'data'
 DEST_FILE = os.path.join(DEST_DIR, 'sample.nwb')
 
