@@ -1,5 +1,9 @@
 FROM node:18-alpine
 WORKDIR /app
-COPY . .
-RUN npm install express cors swagger-ui-express swagger-jsdoc
+
+COPY backend/express_api .
+COPY backend/shared ./shared
+
+RUN npm install express cors
+
 CMD ["node", "index.js"]
