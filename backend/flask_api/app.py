@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flasgger import Swagger
 from functools import wraps
 from shared.utils import load_trace, apply_filter
+import subprocess
 
 app = Flask(__name__)
 CORS(app)
@@ -32,6 +33,29 @@ def get_trace(session_id, neuron_id):
     if filter:
         trace = apply_filter(trace, filter)
     return jsonify({"trace": trace.tolist()})
+
+@app.route("/pipeline/<engine>", methods=["POST"])
+@require_auth
+def run_pipeline(engine):
+    if engine not in ["snakemake", "nextflow"]:
+        return jsonify({"error": "Unsupported pipeline engine"}), 400
+
+    try:
+        if engine == "snakemake":
+            cmd = ["snakemake", "-s", "workflow/snakemake/Snakefile", "--cores", "1"]
+        elif engine == "nextflow":
+            cmd = ["nextflow", "run", "workflow/nextflow"]
+
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        return jsonify({
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "returncode": result.returncode
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -14,4 +14,4 @@ COPY ./frontend/react-app .
 # Build and serve
 RUN npm run build
 EXPOSE 3000
-CMD ["npx", "vite", "preview", "--host"]
+CMD ["npx", "vite", "preview", "--host", "--port", "3000"]
