@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flasgger import Swagger
 from functools import wraps
-from backend.shared.utils import load_trace, apply_filter
+from shared.utils import load_trace, apply_filter
 
 app = Flask(__name__)
 CORS(app)

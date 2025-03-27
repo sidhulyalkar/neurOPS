@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
-const utils = require('../shared/utils_node');
+const utils = require('./shared/utils_node'); 
 const API_KEY = 'demo-token';
 
 function requireAuth(req, res, next) {
