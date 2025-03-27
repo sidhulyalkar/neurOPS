@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+build/
+
+# Data
+*.nwb
+*.npz
+data/sample.nwb
+results/
+
+# Logs and system files
+*.log
+*.sqlite
+*.db
+*.DS_Store
+
+# Docker
+*.tar
+*.pid
+
+# VSCode and IDE
+.vscode/
+.idea/
