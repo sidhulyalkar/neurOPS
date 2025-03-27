@@ -3,22 +3,22 @@ version: '3.8'
 services:
   flask-api:
     build:
-      context: ../backend/flask_api
-      dockerfile: ../../docker/flask.Dockerfile
+      context: ..
+      dockerfile: docker/flask.Dockerfile
     ports:
       - '5050:5000'
 
   express-api:
     build:
-      context: ../backend/express_api
-      dockerfile: ../../docker/express.Dockerfile
+      context: ..
+      dockerfile: docker/express.Dockerfile
     ports:
       - '5001:5001'
 
   frontend:
     build:
-      context: ../frontend/react-app
-      dockerfile: ../../docker/frontend.Dockerfile
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
     ports:
       - '3000:3000'
     depends_on:

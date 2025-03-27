@@ -1,22 +1,17 @@
 FROM node:18-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and lock file for caching
-COPY package*.json ./
+# Copy package files
+COPY ./frontend/react-app/package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the entire app (src, public, etc.)
-COPY . .
+# Copy the rest of the app
+COPY ./frontend/react-app .
 
-# Build the app
+# Build and serve
 RUN npm run build
-
-# Expose the port
 EXPOSE 3000
-
-# Serve built app
-CMD ["npm", "run", "start"]
+CMD ["npx", "vite", "preview", "--host"]
