@@ -4,6 +4,7 @@ from flasgger import Swagger
 from functools import wraps
 from shared.utils import load_trace, apply_filter
 import subprocess
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -20,6 +21,19 @@ def require_auth(f):
         return f(*args, **kwargs)
     return decorated
 
+@app.route("/", methods=["GET"])
+def root():
+    return jsonify({
+        "name": "NeuroOps Flask API",
+        "version": "1.0.0",
+        "endpoints": [
+            "/sessions",
+            "/sessions/<session_id>/neurons/<neuron_id>",
+            "/pipeline/snakemake",
+            "/pipeline/nextflow"
+        ]
+    })
+
 @app.route("/sessions", methods=["GET"])
 @require_auth
 def get_sessions():
@@ -34,28 +48,83 @@ def get_trace(session_id, neuron_id):
         trace = apply_filter(trace, filter)
     return jsonify({"trace": trace.tolist()})
 
-@app.route("/pipeline/<engine>", methods=["POST"])
+@app.route("/pipeline/snakemake", methods=["POST"])
 @require_auth
-def run_pipeline(engine):
-    if engine not in ["snakemake", "nextflow"]:
-        return jsonify({"error": "Unsupported pipeline engine"}), 400
-
+def run_snakemake():
+    """
+    Run Snakemake pipeline
+    ---
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: Bearer token for authentication
+    responses:
+      200:
+        description: Pipeline execution results
+      401:
+        description: Unauthorized
+    """
     try:
-        if engine == "snakemake":
-            cmd = ["snakemake", "-s", "workflow/snakemake/Snakefile", "--cores", "1"]
-        elif engine == "nextflow":
-            cmd = ["nextflow", "run", "workflow/nextflow"]
-
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
+        # Run the Snakemake pipeline
+        result = subprocess.run(
+            ["snakemake", "-s", "../workflow/snakemake/Snakefile", "--cores", "1"],
+            capture_output=True,
+            text=True,
+            check=False
+        )
+        
         return jsonify({
+            "success": result.returncode == 0,
             "stdout": result.stdout,
             "stderr": result.stderr,
             "returncode": result.returncode
         })
-
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route("/pipeline/nextflow", methods=["POST"])
+@require_auth
+def run_nextflow():
+    """
+    Run Nextflow pipeline
+    ---
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: Bearer token for authentication
+    responses:
+      200:
+        description: Pipeline execution results
+      401:
+        description: Unauthorized
+    """
+    try:
+        # Run the Nextflow pipeline
+        result = subprocess.run(
+            ["nextflow", "run", "../workflow/nextflow"],
+            capture_output=True,
+            text=True,
+            check=False
+        )
+        
+        return jsonify({
+            "success": result.returncode == 0,
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "returncode": result.returncode
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

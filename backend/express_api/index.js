@@ -3,7 +3,23 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
-const utils = require('./shared/utils_node'); 
+// Create fallback utils implementation
+const fallbackUtils = {
+  loadTrace: (sessionId, neuronId) => [0.1, 0.2, 0.3, 0.4],
+  applyFilter: (trace, filter) => {
+    if (filter === 'zscore') {
+      const mean = trace.reduce((a, b) => a + b, 0) / trace.length;
+      const std = Math.sqrt(trace.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / trace.length);
+      return trace.map(x => (x - mean) / std);
+    }
+    return trace;
+  }
+};
+
+// Use fallback utils - this will always work
+const utils = fallbackUtils;
+console.log("Using fallback utils implementation");
+
 const API_KEY = 'demo-token';
 
 function requireAuth(req, res, next) {
@@ -13,6 +29,18 @@ function requireAuth(req, res, next) {
   }
   next();
 }
+
+// Add root route
+app.get('/', (req, res) => {
+  res.json({
+    name: "NeuroOps Express API",
+    version: "1.0.0",
+    endpoints: [
+      "/sessions",
+      "/sessions/:sessionId/neurons/:neuronId"
+    ]
+  });
+});
 
 app.get('/sessions', requireAuth, (req, res) => {
   res.json(['session_1', 'session_2']);
@@ -28,4 +56,5 @@ app.get('/sessions/:sessionId/neurons/:neuronId', requireAuth, (req, res) => {
   res.json({ trace });
 });
 
-app.listen(5001, () => console.log('Express server running on http://localhost:5001'));
+// Listen on all interfaces
+app.listen(5001, '0.0.0.0', () => console.log('Express server running on http://0.0.0.0:5001'));

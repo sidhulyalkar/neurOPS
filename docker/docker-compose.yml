@@ -7,6 +7,11 @@ services:
       dockerfile: docker/flask.Dockerfile
     ports:
       - '5050:5000'
+    networks:
+      - neuroops-network
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
 
   express-api:
     build:
@@ -14,6 +19,10 @@ services:
       dockerfile: docker/express.Dockerfile
     ports:
       - '5001:5001'
+    networks:
+      - neuroops-network
+    environment:
+      - NODE_ENV=development
 
   frontend:
     build:
@@ -24,3 +33,9 @@ services:
     depends_on:
       - flask-api
       - express-api
+    networks:
+      - neuroops-network
+
+networks:
+  neuroops-network:
+    driver: bridge
