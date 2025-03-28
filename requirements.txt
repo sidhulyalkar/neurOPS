@@ -9,6 +9,7 @@ scikit-learn
 
 # Pipeline (Snakemake only - Nextflow is CLI-based)
 snakemake
+nextflow
 
 # Testing
 requests
