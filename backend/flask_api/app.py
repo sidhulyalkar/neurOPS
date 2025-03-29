@@ -39,6 +39,13 @@ def root():
 def get_sessions():
     return jsonify(["session_1", "session_2"])
 
+@app.after_request
+def add_headers(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 @app.route("/sessions/<session_id>/neurons/<neuron_id>", methods=["GET"])
 @require_auth
 def get_trace(session_id, neuron_id):
@@ -127,4 +134,6 @@ def run_nextflow():
         }), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
+    print("Starting Flask application...")
+    print("Binding to all interfaces (0.0.0.0) on port 5000")
+    app.run(debug=True, host='0.0.0.0', port=5000)
