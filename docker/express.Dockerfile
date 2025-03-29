@@ -12,8 +12,11 @@ RUN ls -la
 RUN ls -la express_api || echo "express_api not found"
 RUN ls -la shared || echo "shared not found"
 
+# Change working directory to express_api
+WORKDIR /app/express_api
+
 # Listen on all interfaces
 EXPOSE 5001
 
-# Start the server and include debugging output
-CMD echo "Container files:" && find /app -type f | grep -v "node_modules" && node express_api/index.js
+# Start the server with debugging output
+CMD echo "Container files:" && find /app -type f | grep -v "node_modules" && node index.js
